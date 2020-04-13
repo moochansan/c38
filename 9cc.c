@@ -6,6 +6,10 @@
 #include <string.h>
 
 
+//
+// Tokenizer
+//
+
 typedef enum {
 	TK_RESERVED,
 	TK_NUM,
@@ -102,7 +106,7 @@ Token *tokenize(char *p)
 			continue;
 		}
 
-		if (*p == '+' || *p == '-' || *p == '*' || *p == '/')
+		if (strchr("+-*/()", *p))
 		{
 			cur = new_token(TK_RESERVED, cur, p++);
 			continue;
@@ -122,6 +126,10 @@ Token *tokenize(char *p)
 	return head.next;
 }
 
+
+//
+// Parser
+//
 
 typedef enum {
 	ND_ADD,
@@ -158,8 +166,11 @@ Node *new_node_num(int val)
 	return node;
 }
 
-Node *mul();
+Node *expr(void);
+Node *mul(void);
+Node *primary(void);
 
+// expr = mul ("+" mul | "-" mul)*
 Node *expr()
 {
 	Node *node = mul(); 
@@ -175,20 +186,39 @@ Node *expr()
 	}
 }
 
+// mul = primary ("*" primary | "/" primary)*
 Node *mul()
 {
-	Node *node = new_node_num(expect_number());
+	Node *node = primary();
 
 	for (;;)
 	{
 		if (consume('*'))
-			node = new_node(ND_MUL, node, mul());
+			node = new_node(ND_MUL, node, primary());
 		else if (consume('/'))
-			node = new_node(ND_DIV, node, mul());
-		else return node;
+			node = new_node(ND_DIV, node, primary());
+		else
+			return node;
 	}
 }
 
+// primary = "(" expr ")" | num
+Node *primary()
+{
+	if (consume('('))
+	{
+		Node *node = expr();
+		expect(')');
+		return node;
+	}
+	
+	return new_node_num(expect_number());
+}
+
+
+//
+// Code generator
+//
 
 void gen(Node *node)
 {
