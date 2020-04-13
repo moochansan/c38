@@ -102,7 +102,7 @@ Token *tokenize(char *p)
 			continue;
 		}
 
-		if (*p == '+' || *p == '-')
+		if (*p == '+' || *p == '-' || *p == '*' || *p == '/')
 		{
 			cur = new_token(TK_RESERVED, cur, p++);
 			continue;
@@ -158,20 +158,37 @@ Node *new_node_num(int val)
 	return node;
 }
 
+Node *mul();
+
 Node *expr()
+{
+	Node *node = mul(); 
+
+	for (;;)
+	{
+		if (consume('+'))
+			node = new_node(ND_ADD, node, mul());
+		else if (consume('-'))
+			node = new_node(ND_SUB, node, mul());
+		else 
+			return node;
+	}
+}
+
+Node *mul()
 {
 	Node *node = new_node_num(expect_number());
 
 	for (;;)
 	{
-		if (consume('+'))
-			node = new_node(ND_ADD, node, expr());
-		else if (consume('-'))
-			node = new_node(ND_SUB, node, expr());
-		else 
-			return node;
+		if (consume('*'))
+			node = new_node(ND_MUL, node, mul());
+		else if (consume('/'))
+			node = new_node(ND_DIV, node, mul());
+		else return node;
 	}
 }
+
 
 void gen(Node *node)
 {
@@ -199,7 +216,7 @@ void gen(Node *node)
 		printf("  imul rax, rdi\n");
 		break;
 	case ND_DIV:
-		printf("  cpo\n");
+		printf("  cqo\n");
 		printf("  idiv rdi\n");
 		break;
 	}
