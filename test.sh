@@ -46,6 +46,7 @@ assert 1 "1>=1;"
 assert 1 "2>=1;"
 
 assert 18 "a = 3; b = 5 * 6; a + b / 2;"
+assert 13 "foo = 3; bar = 5 * 6; foo + bar / 3;"
 
 echo ""
 echo "Passed :D"

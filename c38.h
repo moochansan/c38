@@ -39,6 +39,7 @@ int expect_number(void);
 bool at_eof(void);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 bool startswith(char *p, char *q);
+int is_alnum(char c);
 Token *tokenize(void);
 
 
@@ -86,6 +87,20 @@ Node *add(void);
 Node *mul(void);
 Node *unary(void);
 Node *primary(void);
+
+typedef struct LVar LVar;
+
+struct LVar
+{
+	LVar *next;
+	char *name;
+	int len;
+	int offset;
+};
+
+extern LVar *locals;
+
+LVar *find_lvar(Token *tok);
 
 
 //
