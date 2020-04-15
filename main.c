@@ -9,17 +9,33 @@ int main(int argc, char **argv)
 	}
 	
 	user_input = argv[1];
-	token = tokenize(argv[1]);
-	Node *node = expr();
+	tokenize();
+	program();
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
 	printf("main:\n");
 
-	gen(node);
+	// prologue
+	// 1文字変数(a - z)文の領域を確保.
+	printf("  push rbp\n");
+	printf("  mov rbp, rsp\n");
+	printf("  sub rsp, 208\n");
 
-	// スタックトップをRAXにロード.
-	printf("  pop rax\n");
+	for (int i = 0; code[i]; i++)
+	{
+		gen(code[i]);
+
+		// 式の評価結果がスタックに残る.
+		// 不要、スタックオーバーフローを避けるためにポップ.
+		printf("  pop rax\n");
+	}
+
+	// epilogue
+	printf("  mov rsp, rbp\n");
+	printf("  pop rbp\n");
+
+	// 最後の式の結果が rax に残っている.
 	printf("  ret\n");
 	return 0;
 }

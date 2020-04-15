@@ -12,6 +12,7 @@
 
 typedef enum {
 	TK_RESERVED,
+	TK_IDENT,
 	TK_NUM,
 	TK_EOF,
 } TokenKind;
@@ -32,12 +33,13 @@ extern char *user_input;
 
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+Token *consume_ident(void);
 void expect(char *op);
 int expect_number(void);
 bool at_eof(void);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 bool startswith(char *p, char *q);
-Token *tokenize(char *p);
+Token *tokenize(void);
 
 
 //
@@ -49,10 +51,12 @@ typedef enum {
 	ND_SUB,
 	ND_MUL,
 	ND_DIV,
-	ND_EQ,  // ==
-	ND_NE,  // !=
-	ND_LT,  // <
-	ND_LE,  // <=
+	ND_EQ,     // ==
+	ND_NE,     // !=
+	ND_LT,     // <
+	ND_LE,     // <=
+	ND_ASSIGN, // =
+	ND_LVAR,   // ローカル変数
 	ND_NUM,
 } NodeKind;
 
@@ -64,11 +68,18 @@ struct Node
 	Node *lhs;
 	Node *rhs;
 	int val;
+	int offset;
 };
+
+extern Node *code[];
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
+
+Node *program(void);
+Node *stmt(void);
 Node *expr(void);
+Node *assign(void);
 Node *equality(void);
 Node *relational(void);
 Node *add(void);
@@ -80,6 +91,6 @@ Node *primary(void);
 //
 // codegen.c 
 //
-
+void gen_lval(Node *node);
 void gen(Node *node);
 
