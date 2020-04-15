@@ -5,13 +5,16 @@ OBJS=$(SRCS:.c=.o)
 c38: $(OBJS)
 	$(CC) -o c38 $(OBJS) $(LDFLAGS)
 
+out: $(OBJS)
+	$(CC) -g -o out $(OBJS) $(LDFLAGS)
+
 $(OBJS): c38.h
 
 test: c38 
 	./test.sh
 
 clean:
-	rm -f c38 *.o *~ tmp*
+	rm -f c38 *.o *~ tmp* out
 
 .PHONY: test clean
 
