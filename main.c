@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 	}
 
 	// epilogue
+	printf(".L.return:\n");
 	printf("  mov rsp, rbp\n");
 	printf("  pop rbp\n");
 

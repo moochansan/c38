@@ -47,6 +47,9 @@ assert 1 "2>=1;"
 
 assert 18 "a = 3; b = 5 * 6; a + b / 2;"
 assert 13 "foo = 3; bar = 5 * 6; foo + bar / 3;"
+assert 3 "return 3;"
+assert 38 "s_1 = 30; s_2 = 8; return s_1 + s_2;"
+assert 38 "s_1 = 30; s_2 = 8; return s_1 + s_2; return 11;"
 
 echo ""
 echo "Passed :D"

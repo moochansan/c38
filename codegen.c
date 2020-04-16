@@ -33,6 +33,11 @@ void gen(Node *node)
 		printf("  pop rax\n");
 		printf("  mov [rax], rdi\n");
 		return;
+	case ND_RETURN:
+		gen(node->lhs);
+		printf("  pop rax\n");
+		printf("  jmp .L.return\n");
+		return;
 	}
 
 	gen(node->lhs);

@@ -132,6 +132,13 @@ Token *tokenize()
 			continue;
 		}
 
+		if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6]))
+		{
+			cur = new_token(TK_RESERVED, cur, p, 6);
+			p += 6;
+			continue;
+		}
+
 		if ('a' <= *p && *p <= 'z' ||
 			'A' <= *p && *p <= 'Z' ||
 			*p == '_')
