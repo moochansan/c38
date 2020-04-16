@@ -85,6 +85,28 @@ bool startswith(char *p, char *q)
 	return memcmp(p, q, strlen(q)) == 0;
 }
 
+char *starts_with_reserved(char *p)
+{
+	static char *keyWord[] = {"return", "if", "else"};
+
+	for (int i = 0; i < sizeof(keyWord) / sizeof(*keyWord); ++i)
+	{
+		int len = strlen(keyWord[i]);
+		if (startswith(p, keyWord[i]) && !is_alnum(len))
+			return keyWord[i];
+	}
+
+	static char *op[] = {"==", "!=", "<=", ">="};
+
+	for (int i = 0; i < sizeof(op) / sizeof(*op); ++i)
+	{
+		if (startswith(p, op[i]))
+			return op[i];
+	}
+
+	return NULL;
+}
+
 int is_alnum(char c)
 {
 	return ('a' <= c && c <= 'z') ||
@@ -109,11 +131,12 @@ Token *tokenize()
 			continue;
 		}
 
-		if (startswith(p, "==") || startswith(p, "!=") ||
-			startswith(p, "<=") || startswith(p, ">="))
+		char *rsv = starts_with_reserved(p);
+		if (rsv)
 		{
-			cur = new_token(TK_RESERVED, cur, p, 2);
-			p += 2;
+			int len = strlen(rsv);
+			cur = new_token(TK_RESERVED, cur, p, len);
+			p += len;
 			continue;
 		}
 

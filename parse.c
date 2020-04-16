@@ -30,7 +30,9 @@ Node *program()
 	code[i] = NULL;
 }
 
-// stmt = expr ";" | "return" expr ";"
+// stmt = expr ";" |
+//        "return" expr ";" |
+//        "if" "(" expr ")" stmt ("else" stmt)?
 Node *stmt()
 {
 	Node *node;
@@ -39,6 +41,18 @@ Node *stmt()
 		node = calloc(1, sizeof(Node));
 		node->kind = ND_RETURN;
 		node->lhs = expr();
+	}
+	else if (consume("if"))
+	{
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_IF;
+		expect("(");
+		node->cond = expr();
+		expect(")");
+		node->then = stmt();
+		if (consume("else"))
+			node->els = stmt();
+		return node;
 	}
 	else
 	{

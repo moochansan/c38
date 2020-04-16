@@ -39,6 +39,7 @@ int expect_number(void);
 bool at_eof(void);
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 bool startswith(char *p, char *q);
+char *starts_with_reserved(char *p);
 int is_alnum(char c);
 Token *tokenize(void);
 
@@ -60,6 +61,7 @@ typedef enum {
 	ND_LVAR,   // ローカル変数
 	ND_NUM,
 	ND_RETURN,
+	ND_IF,
 } NodeKind;
 
 typedef struct Node Node;
@@ -71,6 +73,11 @@ struct Node
 	Node *rhs;
 	int val;
 	int offset;
+
+// for "if"
+	Node *cond;
+	Node *then;
+	Node *els;
 };
 
 extern Node *code[];

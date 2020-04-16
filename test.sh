@@ -51,6 +51,9 @@ assert 3 "return 3;"
 assert 38 "s_1 = 30; s_2 = 8; return s_1 + s_2;"
 assert 38 "s_1 = 30; s_2 = 8; return s_1 + s_2; return 11;"
 
+assert 38 "if(1 == 1) return 38; else return 3;"
+assert 3 "if(1 == 0) return 38; else return 3;"
+
 echo ""
 echo "Passed :D"
 
