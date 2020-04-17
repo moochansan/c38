@@ -87,7 +87,7 @@ bool startswith(char *p, char *q)
 
 char *starts_with_reserved(char *p)
 {
-	static char *keyWord[] = {"return", "if", "else", "while"};
+	static char *keyWord[] = {"return", "if", "else", "while", "for"};
 
 	for (int i = 0; i < sizeof(keyWord) / sizeof(*keyWord); ++i)
 	{

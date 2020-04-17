@@ -55,6 +55,8 @@ assert 38 "if(1 == 1) return 38; else return 3;"
 assert 3 "if(1 == 0) return 38; else return 3;"
 assert 38 "a = 30; while(a < 38) a = a + 1; return a;"
 assert 30 "a = 30; while(a > 38) a = a + 1; return a;"
+assert 38 "a = 0; i = 0; for(i = 0; i < 38; i = i + 1) a = a + 1; return a;"
+assert 38 "for(;;) return 38; return 0;"
 
 echo ""
 echo "Passed :D"

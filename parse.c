@@ -33,7 +33,8 @@ Node *program()
 // stmt = expr ";" |
 //        "return" expr ";" |
 //        "if" "(" expr ")" stmt ("else" stmt)? |
-//        "while" "(" expr ")" stmt
+//        "while" "(" expr ")" stmt |
+//        "for" "(" expr? ";" expr? ";" expr? ")" stmt
 Node *stmt()
 {
 	Node *node;
@@ -65,6 +66,29 @@ Node *stmt()
 		node->then = stmt();
 		return node;
 	}
+	else if (consume("for"))
+	{
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_FOR;
+		expect("(");
+		if (!consume(";"))
+		{
+			node->init = expr();
+			expect(";");
+		}
+		if (!consume(";"))
+		{
+			node->cond = expr();
+			expect(";");
+		}
+		if (!consume(")"))
+		{
+			node->inc = expr();
+			expect(")");
+		}
+		node->then = stmt();
+		return node;
+	}
 	else
 	{
 		node = expr();
@@ -75,7 +99,7 @@ Node *stmt()
 }
 
 
-// expr = mul ("+" mul | "-" mul)*
+// expr = assign
 Node *expr()
 {
 	return assign();
