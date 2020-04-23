@@ -13,8 +13,11 @@ $(OBJS): c38.h
 test: c38 
 	./test.sh
 
+deb: c38
+	./deb.sh
+
 clean:
 	rm -f c38 *.o *~ tmp* out
 
-.PHONY: test clean
+.PHONY: test clean deb
 
