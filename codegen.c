@@ -19,6 +19,10 @@ void gen(Node *node)
 {
 	switch (node->kind)
 	{
+	case ND_CALLFUNC:
+		printf("  call %s\n", node->funcname);
+		printf("  push rax\n");
+		return;
 	case ND_NUM:
 		printf("  push %d\n", node->val);
 		return;

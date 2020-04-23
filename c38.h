@@ -77,6 +77,7 @@ typedef enum {
 	ND_WHILE,
 	ND_FOR,
 	ND_BLOCK,
+	ND_CALLFUNC,
 } NodeKind;
 
 typedef struct Node Node;
@@ -99,6 +100,9 @@ struct Node
 
 // for "{}"
 	Node *body;
+
+// for "func call"
+	char *funcname;
 };
 
 extern Node *code[];
@@ -133,4 +137,11 @@ Function *program(void);
 void gen_lval(Node *node);
 void gen(Node *node);
 void codegen(Function *prog);
+
+
+
+//
+// __
+
+char* strndup(const char *s, size_t n);
 

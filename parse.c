@@ -2,6 +2,20 @@
 
 LVar *locals;
 
+char *strndup(const char *s, size_t n)
+{
+	char *p = memchr(s, '\0', n);
+	if (p != NULL)
+		n = p - s;
+	p = malloc(n + 1);
+	if (p != NULL)
+	{
+		memcpy(p, s, n);
+		p[n] = '\0';
+	}
+	return p;
+}
+
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs)
 {
 	Node *node = calloc(1, sizeof(Node));
@@ -221,7 +235,7 @@ Node *unary()
 	return primary();
 }
 
-// primary = "(" expr ")" | num | ident
+// primary = "(" expr ")" | num | ident | ident ( "(" ")" )?
 Node *primary()
 {
 	if (consume("("))
@@ -234,6 +248,17 @@ Node *primary()
 	Token *tok = consume_ident();
 	if (tok)
 	{
+		// func call
+		if (consume("("))
+		{
+			expect(")");
+			Node *node = calloc(1, sizeof(Node));
+			node->kind = ND_CALLFUNC;
+			node->funcname = strndup(tok->str, tok->len);
+			return node;
+		}
+
+		// variable
 		Node *node = calloc(1, sizeof(Node));
 		node->kind = ND_LVAR;
 
