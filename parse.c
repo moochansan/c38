@@ -19,15 +19,24 @@ Node *new_node_num(int val)
 	return node;
 }
 
-Node *code[100];
-
 // program = stmt*
-Node *program()
+Function *program()
 {
-	int i = 0;
+	locals = NULL;
+
+	Node head = {};
+	Node *cur = &head;
+
 	while (!at_eof())
-		code[i++] = stmt();
-	code[i] = NULL;
+	{
+		cur->next = stmt();
+		cur = cur->next;
+	}
+
+	Function *prog = calloc(1, sizeof(Function));
+	prog->node = head.next;
+	prog->locals = locals;
+	return prog;
 }
 
 // stmt = expr ";" |
@@ -213,7 +222,7 @@ Node *primary()
 		LVar *lvar = find_lvar(tok);
 		if (lvar)
 		{
-			node->offset = lvar->offset;
+			node->var = lvar;
 		}
 		else
 		{
@@ -225,8 +234,8 @@ Node *primary()
 			lvar->next = locals;
 			lvar->name = tok->str;
 			lvar->len = tok->len;
-			node->offset = lvar->offset;
 			locals = lvar;
+			node->var = lvar;
 		}
 		return node;
 	}

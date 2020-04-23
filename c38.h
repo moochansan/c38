@@ -48,6 +48,18 @@ Token *tokenize(void);
 // Parse.c
 //
 
+typedef struct LVar LVar;
+
+struct LVar
+{
+	LVar *next;
+	char *name;
+	int len;
+	int offset;
+};
+
+LVar *find_lvar(Token *tok);
+
 typedef enum {
 	ND_ADD,
 	ND_SUB,
@@ -74,7 +86,8 @@ struct Node
 	Node *lhs;
 	Node *rhs;
 	int val;
-	int offset;
+	LVar *var;
+	Node *next;
 
 // for "if", "while" or "for"
 	Node *cond;
@@ -89,7 +102,6 @@ extern Node *code[];
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 
-Node *program(void);
 Node *stmt(void);
 Node *expr(void);
 Node *assign(void);
@@ -100,24 +112,21 @@ Node *mul(void);
 Node *unary(void);
 Node *primary(void);
 
-typedef struct LVar LVar;
+typedef struct Function Function;
 
-struct LVar
+struct Function
 {
-	LVar *next;
-	char *name;
-	int len;
-	int offset;
+	Node *node;
+	LVar *locals;
+	int stackSize;
 };
 
-extern LVar *locals;
-
-LVar *find_lvar(Token *tok);
-
+Function *program(void);
 
 //
 // codegen.c 
 //
 void gen_lval(Node *node);
 void gen(Node *node);
+void codegen(Function *prog);
 

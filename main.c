@@ -10,34 +10,18 @@ int main(int argc, char **argv)
 	
 	user_input = argv[1];
 	tokenize();
-	program();
+	Function *prog = program();
 
-	printf(".intel_syntax noprefix\n");
-	printf(".global main\n");
-	printf("main:\n");
-
-	// prologue
-	// 1文字変数(a - z)文の領域を確保.
-	printf("  push rbp\n");
-	printf("  mov rbp, rsp\n");
-	printf("  sub rsp, 208\n");
-
-	for (int i = 0; code[i]; i++)
+	// 変数分の領域を計算.
+	int offset = 0;
+	for (LVar *var = prog->locals; var; var = var->next)
 	{
-		gen(code[i]);
-
-		// 式の評価結果がスタックに残る.
-		// 不要、スタックオーバーフローを避けるためにポップ.
-		printf("  pop rax\n");
+		offset += 8;
 	}
+	prog->stackSize = offset;
 
-	// epilogue
-	printf(".L.return:\n");
-	printf("  mov rsp, rbp\n");
-	printf("  pop rbp\n");
+	codegen(prog);
 
-	// 最後の式の結果が rax に残っている.
-	printf("  ret\n");
 	return 0;
 }
 
