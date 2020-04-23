@@ -58,6 +58,10 @@ assert 30 "a = 30; while(a > 38) a = a + 1; return a;"
 assert 38 "a = 0; i = 0; for(i = 0; i < 38; i = i + 1) a = a + 1; return a;"
 assert 38 "for(;;) return 38; return 0;"
 
+assert 38 "{38;}"
+assert 38 "a = 0; while(a < 38) {b = 1; a = a + b;} return a;"
+assert 55 "i=0; j=0; while(i<=10) {j=i+j; i=i+1;} return j;"
+
 echo ""
 echo "Passed :D"
 

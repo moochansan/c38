@@ -43,7 +43,8 @@ Function *program()
 //        "return" expr ";" |
 //        "if" "(" expr ")" stmt ("else" stmt)? |
 //        "while" "(" expr ")" stmt |
-//        "for" "(" expr? ";" expr? ";" expr? ")" stmt
+//        "for" "(" expr? ";" expr? ";" expr? ")" stmt |
+//        "{" stmt* "}"
 Node *stmt()
 {
 	Node *node;
@@ -52,6 +53,23 @@ Node *stmt()
 		node = calloc(1, sizeof(Node));
 		node->kind = ND_RETURN;
 		node->lhs = expr();
+	}
+	else if (consume("{"))
+	{
+		node = calloc(1, sizeof(Node));
+		node->kind = ND_BLOCK;
+
+		Node head = {};
+		Node *block = &head;
+		while (!consume("}"))
+		{
+			Node *n = stmt();
+			block->next = n;
+			block = n;
+		}
+
+		node->body = head.next;
+		return node;
 	}
 	else if (consume("if"))
 	{
