@@ -41,25 +41,46 @@ Node *new_node_num(int val)
 	return node;
 }
 
-// program = stmt*
+// program = function*
 Function *program()
+{
+	Function head = {};
+	Function *cur = &head;
+
+	while (!at_eof())
+	{
+		cur->next = function();
+		cur = cur->next;
+	}
+	return head.next;
+}
+
+// function = ident "(" ")" "{" stmt* "}"
+Function *function()
 {
 	locals = NULL;
 
+	char *name = expect_ident();
+	expect("(");
+	expect(")");
+	expect("{");
+	
 	Node head = {};
 	Node *cur = &head;
 
-	while (!at_eof())
+	while (!consume("}"))
 	{
 		cur->next = stmt();
 		cur = cur->next;
 	}
 
-	Function *prog = calloc(1, sizeof(Function));
-	prog->node = head.next;
-	prog->locals = locals;
-	return prog;
+	Function *func = calloc(1, sizeof(Function));
+	func->name = name;
+	func->node = head.next;
+	func->locals = locals;
+	return func;
 }
+
 
 // stmt = expr ";" |
 //        "return" expr ";" |

@@ -42,6 +42,7 @@ bool startswith(char *p, char *q);
 char *starts_with_reserved(char *p);
 int is_alnum(char c);
 Token *tokenize(void);
+char *expect_ident(void);
 
 
 //
@@ -126,12 +127,15 @@ typedef struct Function Function;
 
 struct Function
 {
+	Function *next;
+	char *name;
 	Node *node;
 	LVar *locals;
 	int stackSize;
 };
 
 Function *program(void);
+Function *function(void);
 
 //
 // codegen.c 

@@ -12,14 +12,16 @@ int main(int argc, char **argv)
 	tokenize();
 	Function *prog = program();
 
-	// 変数分の領域を計算.
-	int offset = 0;
-	for (LVar *var = prog->locals; var; var = var->next)
+	for (Function *func = prog; func; func = func->next)
 	{
-		offset += 8;
+		// 変数分の領域を計算.
+		int offset = 0;
+		for (LVar *var = prog->locals; var; var = var->next)
+		{
+			offset += 8;
+		}
+		func->stackSize = offset;
 	}
-	prog->stackSize = offset;
-
 	codegen(prog);
 
 	return 0;

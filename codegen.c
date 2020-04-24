@@ -1,6 +1,7 @@
 #include "c38.h"
 
 static int labelseq = 1;
+static char *funcname;
 
 void gen_lval(Node *node)
 {
@@ -137,7 +138,7 @@ void gen(Node *node)
 	case ND_RETURN:
 		gen(node->lhs);
 		printf("  pop rax\n");
-		printf("  jmp .L.return\n");
+		printf("  jmp .L.return.%s\n", funcname);
 		return;
 	}
 
@@ -190,24 +191,25 @@ void gen(Node *node)
 void codegen(Function *prog)
 {
 	printf(".intel_syntax noprefix\n");
-	printf(".global main\n");
-	printf("main:\n");
-
-	// prologue
-	printf("  push rbp\n");
-	printf("  mov rbp, rsp\n");
-	printf("  sub rsp, %d\n", prog->stackSize);
-
-	for (Node *node = prog->node; node; node = node->next)
+	for (Function *func = prog; func; func = func->next)
 	{
-		gen(node);
-	}
-	printf("  pop rax\n");
+		printf(".global %s\n", func->name);
+		printf("%s:\n", func->name);
+		funcname = func->name;
 
-	// epilogue
-	printf(".L.return:\n");
-	printf("  mov rsp, rbp\n");
-	printf("  pop rbp\n");
-	printf("  ret\n");
+		// prologue
+		printf("  push rbp\n");
+		printf("  mov rbp, rsp\n");
+		printf("  sub rsp, %d\n", func->stackSize);
+
+		for (Node *node = func->node; node; node = node->next)
+			gen(node);
+
+		// epilogue
+		printf(".L.return.%s:\n", funcname);
+		printf("  mov rsp, rbp\n");
+		printf("  pop rbp\n");
+		printf("  ret\n");
+	}
 }
 
