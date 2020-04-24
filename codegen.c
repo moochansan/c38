@@ -15,14 +15,30 @@ void gen_lval(Node *node)
 	printf("  push rax\n");
 }
 
+static char *argregs[] = {"rdi", "rsi", "rdx", "rcx","r8", "r9"}; 
+
 void gen(Node *node)
 {
 	switch (node->kind)
 	{
 	case ND_CALLFUNC:
+	{
+		int numargs = 0;
+		for (Node *arg = node->args; arg; arg = arg->next)
+		{
+			gen(arg);
+			numargs++;
+		}
+
+		for (int i = numargs - 1; i >= 0; i--)
+		{
+			printf("  pop %s\n", argregs[i]);
+		}
+
 		printf("  call %s\n", node->funcname);
 		printf("  push rax\n");
 		return;
+	}
 	case ND_NUM:
 		printf("  push %d\n", node->val);
 		return;

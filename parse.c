@@ -16,6 +16,14 @@ char *strndup(const char *s, size_t n)
 	return p;
 }
 
+LVar *find_lvar(Token *tok)
+{
+	for (LVar *var = locals; var; var = var->next)
+		if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+			return var;
+	return NULL;
+}
+
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs)
 {
 	Node *node = calloc(1, sizeof(Node));
@@ -235,7 +243,7 @@ Node *unary()
 	return primary();
 }
 
-// primary = "(" expr ")" | num | ident | ident ( "(" ")" )?
+// primary = "(" expr ")" | num | ident func_args?
 Node *primary()
 {
 	if (consume("("))
@@ -251,10 +259,10 @@ Node *primary()
 		// func call
 		if (consume("("))
 		{
-			expect(")");
 			Node *node = calloc(1, sizeof(Node));
 			node->kind = ND_CALLFUNC;
 			node->funcname = strndup(tok->str, tok->len);
+			node->args = func_args();
 			return node;
 		}
 
@@ -286,11 +294,23 @@ Node *primary()
 		return new_node_num(expect_number());
 }
 
-LVar *find_lvar(Token *tok)
+// func_args = "(" (assign ("," assign)*)? ")"
+Node *func_args()
 {
-	for (LVar *var = locals; var; var = var->next)
-		if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
-			return var;
-	return NULL;
+	if (consume(")"))
+		return NULL;
+
+	Node head = {};
+	Node *cur = &head;
+	cur->next = assign();
+
+	while (consume(","))
+	{
+		cur = cur->next;
+		cur->next = assign();
+	}
+
+	expect(")");
+	return head.next;
 }
 

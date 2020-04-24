@@ -103,6 +103,7 @@ struct Node
 
 // for "func call"
 	char *funcname;
+	Node *args;
 };
 
 extern Node *code[];
@@ -119,6 +120,7 @@ Node *add(void);
 Node *mul(void);
 Node *unary(void);
 Node *primary(void);
+Node *func_args(void);
 
 typedef struct Function Function;
 

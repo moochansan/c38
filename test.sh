@@ -67,6 +67,9 @@ assert 55 "i=0; j=0; while(i<=10) {j=i+j; i=i+1;} return j;"
 assert 1 "return funcTest1();"
 assert 2 "return funcTest2();"
 assert 3 "a = funcTest1(); b = funcTest2(); return a + b;"
+assert 38 "a = 30; b = 8; return funcTestAdd(a, b);"
+assert 21 "a = 1; b = 2; return funcTestAdd6(a, b, 3, 4, 5, 6);"
+
 echo ""
 echo "Passed :D"
 
