@@ -16,9 +16,10 @@ int main(int argc, char **argv)
 	{
 		// 変数分の領域を計算.
 		int offset = 0;
-		for (LVar *var = prog->locals; var; var = var->next)
+		for (VarList *v1 = func->locals; v1; v1 = v1->next)
 		{
 			offset += 8;
+			v1->var->offset = offset;
 		}
 		func->stackSize = offset;
 	}

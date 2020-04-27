@@ -1,6 +1,6 @@
 #include "c38.h"
 
-LVar *locals;
+static VarList *locals;
 
 char *strndup(const char *s, size_t n)
 {
@@ -18,9 +18,12 @@ char *strndup(const char *s, size_t n)
 
 LVar *find_lvar(Token *tok)
 {
-	for (LVar *var = locals; var; var = var->next)
+	for (VarList *v1 = locals; v1; v1 = v1->next)
+	{
+		LVar *var = v1->var;
 		if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
 			return var;
+	}
 	return NULL;
 }
 
@@ -299,15 +302,14 @@ Node *primary()
 		else
 		{
 			lvar = calloc(1, sizeof(LVar));
-			if (locals)
-				lvar->offset = locals->offset + 8;
-			else
-				lvar->offset = 8;
-			lvar->next = locals;
 			lvar->name = tok->str;
 			lvar->len = tok->len;
-			locals = lvar;
 			node->var = lvar;
+
+			VarList *v1 = calloc(1, sizeof(VarList));
+			v1->var = lvar;
+			v1->next = locals;
+			locals = v1;
 		}
 		return node;
 	}

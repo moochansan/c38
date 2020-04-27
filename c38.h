@@ -53,10 +53,17 @@ typedef struct LVar LVar;
 
 struct LVar
 {
-	LVar *next;
 	char *name;
 	int len;
 	int offset;
+};
+
+typedef struct VarList VarList;
+
+struct VarList
+{
+	VarList *next;
+	LVar *var;
 };
 
 LVar *find_lvar(Token *tok);
@@ -130,7 +137,7 @@ struct Function
 	Function *next;
 	char *name;
 	Node *node;
-	LVar *locals;
+	VarList *locals;
 	int stackSize;
 };
 
