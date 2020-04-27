@@ -138,11 +138,13 @@ struct Function
 	char *name;
 	Node *node;
 	VarList *locals;
+	VarList *params;
 	int stackSize;
 };
 
 Function *program(void);
 Function *function(void);
+VarList *read_func_params(void);
 
 //
 // codegen.c 

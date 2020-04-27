@@ -21,10 +21,22 @@ LVar *find_lvar(Token *tok)
 	for (VarList *v1 = locals; v1; v1 = v1->next)
 	{
 		LVar *var = v1->var;
-		if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+		if (strlen(var->name) == tok->len && !memcmp(tok->str, var->name, tok->len))
 			return var;
 	}
 	return NULL;
+}
+
+static LVar *new_lvar(char *name)
+{
+	LVar *var = calloc(1, sizeof(LVar));
+	var->name = name;
+
+	VarList *v1 = calloc(1, sizeof(VarList));
+	v1->var = var;
+	v1->next = locals;
+	locals = v1;
+	return var;
 }
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs)
@@ -58,14 +70,15 @@ Function *program()
 	return head.next;
 }
 
-// function = ident "(" ")" "{" stmt* "}"
+// function = ident "(" params? ")" "{" stmt* "}"
 Function *function()
 {
 	locals = NULL;
 
-	char *name = expect_ident();
+	Function *func = calloc(1, sizeof(Function));
+	func->name = expect_ident();
 	expect("(");
-	expect(")");
+	func->params = read_func_params();
 	expect("{");
 	
 	Node head = {};
@@ -77,14 +90,30 @@ Function *function()
 		cur = cur->next;
 	}
 
-	Function *func = calloc(1, sizeof(Function));
-	func->name = name;
 	func->node = head.next;
 	func->locals = locals;
 	return func;
 }
 
+// params = ident ("," ident)*
+VarList *read_func_params()
+{
+	if (consume(")"))
+		return NULL;
 
+	VarList *head = calloc(1, sizeof(VarList));
+	head->var = new_lvar(expect_ident());
+	VarList *cur = head;
+
+	while (!consume(")"))
+	{
+		expect(",");
+		cur->next = calloc(1, sizeof(VarList));
+		cur->next->var = new_lvar(expect_ident());
+		cur = cur->next;
+	}
+	return head;
+}
 // stmt = expr ";" |
 //        "return" expr ";" |
 //        "if" "(" expr ")" stmt ("else" stmt)? |
@@ -301,15 +330,8 @@ Node *primary()
 		}
 		else
 		{
-			lvar = calloc(1, sizeof(LVar));
-			lvar->name = tok->str;
-			lvar->len = tok->len;
+			lvar =new_lvar(strndup(tok->str, tok->len)); 
 			node->var = lvar;
-
-			VarList *v1 = calloc(1, sizeof(VarList));
-			v1->var = lvar;
-			v1->next = locals;
-			locals = v1;
 		}
 		return node;
 	}

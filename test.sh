@@ -70,6 +70,8 @@ assert 38 "main() { a = 30; b = 8; return funcTestAdd(a, b); }"
 assert 21 "main() { a = 1; b = 2; return funcTestAdd6(a, b, 3, 4, 5, 6); }"
 
 assert 38 "main() { return func38();} func38() {return 38;}"
+assert 38 "main() { a = 30; b = 8; return func(a, b);} func(x, y){ return x + y;}"
+assert 38 "main() { a = 1; if (func(a)) return 38; else return 3;} func(x){return x != 0;}"
 
 echo ""
 echo "Passed :D"
